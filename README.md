@@ -12,7 +12,7 @@ openssl req -new -x509 -days 3650 -nodes \
 
 
 openssl x509 -in ssl_cert/SquidCA.pem -outform DER -out ssl_cert/SquidCA.der
-
+# openssl x509 -in ssl_cert/SquidCA.pem -outform DER -out ssl_cert/SquidCA.crt
 
 # 自动获取 Squid 配置文件中定义的运行用户（默认为 proxy 或 squid）
 SQUID_USER=$(grep -E '^cache_effective_user' /etc/squid/squid.conf | awk '{print $2}')
