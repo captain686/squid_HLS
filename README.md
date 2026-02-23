@@ -12,7 +12,17 @@ openssl req -new -x509 -days 3650 -nodes \
 
 
 openssl x509 -in ssl_cert/SquidCA.pem -outform DER -out ssl_cert/SquidCA.der
-sudo /usr/lib/squid/security_file_certgen -c -s /var/lib/squid/ssl_db -M 4MB
+
+
+# 自动获取 Squid 配置文件中定义的运行用户（默认为 proxy 或 squid）
+SQUID_USER=$(grep -E '^cache_effective_user' /etc/squid/squid.conf | awk '{print $2}')
+[ -z "$SQUID_USER" ] && SQUID_USER="proxy" # 如果没搜到，默认尝试使用 proxy
+
+# 执行合并后的初始化流程
+sudo mkdir -p /var/lib/squid && \
+sudo chown -R $SQUID_USER:$SQUID_USER /var/lib/squid && \
+sudo -u $SQUID_USER /usr/lib/squid/security_file_certgen -c -s /var/lib/squid/ssl_db -M 4MB
+
 ```
 
 ## squid.conf
